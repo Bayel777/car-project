@@ -1,7 +1,26 @@
+
 import Typography from "@/components/ui/Typography";
 import CheckboxAndLabel from "./CheckboxAndLabel";
 
-function CarBrands() {
+type CarBrandsProps = {
+  handleBrandChange: (brand: string, isChecked: boolean) => void;
+  selectedBrands: string[];
+};
+
+function CarBrands({ handleBrandChange, selectedBrands }: CarBrandsProps) {
+  const allBrands = [
+    "Lexus",
+    "Mazda",
+    "Audi",
+    "BMW",
+    "Toyota",
+    "Kia",
+    "Hyundai",
+    "Cadillac",
+    "Lixiang",
+    "Chevrolet",
+  ];
+
   return (
     <div className=" pt-25 pl-4 pr-4 ">
       <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
@@ -13,23 +32,18 @@ function CarBrands() {
           <Typography>Car Brands</Typography>
         </div>
         <div className="px-6 grid grid-flow-col grid-rows-2 gap-4 items-center flex-wrap">
-          <CheckboxAndLabel label="Lexus" />
-          <CheckboxAndLabel label="Mazda" />
-          <CheckboxAndLabel label="Audi" />
-          <CheckboxAndLabel label="BMW" />
-          <CheckboxAndLabel label="Toyota" />
-          <CheckboxAndLabel label="Kia" />
-          <CheckboxAndLabel label="Hyundai" />
-          <CheckboxAndLabel label="Cadillac" />
-          <CheckboxAndLabel label="Lixiang" />
-          <CheckboxAndLabel label="Chevrolet" />
+          {allBrands.map((brand) => (
+            <CheckboxAndLabel
+              key={brand}
+              label={brand}
+              id={brand.toLowerCase()}
+              checked={selectedBrands.includes(brand)}
+              onChange={(isChecked) => handleBrandChange(brand, isChecked)}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 }
 export default CarBrands;
-
-
-
-

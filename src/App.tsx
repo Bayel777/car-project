@@ -1,11 +1,10 @@
-// App.tsx
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "@/components/ui/Header";
 import TestError from "@/pages/TestError";
 import Registration from "@/pages/Registration";
 import Main from "@/components/ui/Main";
 import EditCarModal from "./pages/EditCarModal";
+import CreateCarModal from "./pages/CreateCarModal";
 import { UserProvider } from "@/store/UserContext";
 import Footer from "./components/Footer";
 
@@ -23,6 +22,17 @@ function App() {
             <>
               <Header />
               <Main />
+            </>
+          }
+        />
+
+        <Route
+          path="/cars/create"
+          element={
+            <>
+              <Header />
+              <CreateCarModal />
+              <Footer />
             </>
           }
         />

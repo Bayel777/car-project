@@ -1,17 +1,42 @@
-// Main.tsx
-
-import { useEffect, useState } from "react";
-import CarBrands from "./CarBrands";
-import FilterAndCreate from "./FilterAndCreate";
 import PriceSort from "./PriceSort";
 import TableCar from "./TableCar";
 import { useUser } from "@/store/UserContext";
 import { Alert, AlertTitle } from "@/components/ui/Alert";
 import { CheckCircle2Icon } from "lucide-react";
+import { useState, useEffect } from "react";
+import CarBrands from "./CarBrands";
+import FilterAndCreate from "./FilterAndCreate";
+
+export type SortType =
+  | "No sorting"
+  | "Price: Low to High"
+  | "Price: High to Low";
 
 function Main() {
   const { successMessage, setSuccessMessage } = useUser();
   const [showAlert, setShowAlert] = useState(false);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+
+  const [currentSort, setCurrentSort] = useState<SortType>("No sorting");
+
+  const handleBrandChange = (brand: string, isChecked: boolean) => {
+    setSelectedBrands((prevBrands) => {
+      if (isChecked) {
+        return [...prevBrands, brand];
+      } else {
+        return prevBrands.filter((b) => b !== brand);
+      }
+    });
+  };
+
+  const handleSortChange = (sortKey: SortType) => {
+    setCurrentSort(sortKey);
+  };
+
+  const handleClearFilters = () => {
+    setSelectedBrands([]);
+    setCurrentSort("No sorting");
+  };
 
   useEffect(() => {
     if (successMessage) {
@@ -44,10 +69,20 @@ function Main() {
           </Alert>
         )}
       </div>
-      <CarBrands />
-      <PriceSort />
-      <FilterAndCreate />
-      <TableCar />
+
+      <CarBrands
+        handleBrandChange={handleBrandChange}
+        selectedBrands={selectedBrands}
+      />
+
+      <PriceSort
+        currentSort={currentSort}
+        handleSortChange={handleSortChange}
+      />
+
+      <FilterAndCreate onClearFilters={handleClearFilters} />
+
+      <TableCar selectedBrands={selectedBrands} currentSort={currentSort} />
     </div>
   );
 }

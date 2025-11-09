@@ -3,15 +3,20 @@ import { Label } from "@/components/ui/Label";
 
 type CheckboxAndLabelProps = {
   label: string;
-  checked?: boolean;
-  id?: string;
-  onChange?: () => void;
+  checked: boolean;
+  id: string;
+  onChange: (isChecked: boolean) => void;
 };
 
-function CheckboxAndLabel({ label, checked = false, id = "checkbox" }: CheckboxAndLabelProps) {
+function CheckboxAndLabel({
+  label,
+  checked,
+  id,
+  onChange,
+}: CheckboxAndLabelProps) {
   return (
     <div className="flex items-start gap-3">
-      <Checkbox id={id} defaultChecked={checked} />
+      <Checkbox id={id} checked={checked} onCheckedChange={onChange} />
       <div className="grid gap-2">
         <Label htmlFor={id}>{label}</Label>
       </div>
@@ -20,4 +25,3 @@ function CheckboxAndLabel({ label, checked = false, id = "checkbox" }: CheckboxA
 }
 
 export default CheckboxAndLabel;
-

@@ -1,15 +1,21 @@
-
-
 import type { Car } from "@/store/UserContext";
 import { useUser } from "@/store/UserContext";
 import Table from "./Table";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteCarModal from "@/pages/DeleteCarModal";
+import { type SortType } from "./Main";
 
-export default function TableCar() {
- 
-  const { cars, deleteCar, setSuccessMessage } = useUser(); 
+type TableCarProps = {
+  selectedBrands: string[];
+  currentSort: SortType;
+};
+
+export default function TableCar({
+  selectedBrands,
+  currentSort,
+}: TableCarProps) {
+  const { cars, deleteCar, setSuccessMessage } = useUser();
   const navigate = useNavigate();
 
   const [deletingCarId, setDeletingCarId] = useState<number | null>(null);
@@ -28,16 +34,38 @@ export default function TableCar() {
     if (deletingCarId === null) return;
     try {
       await deleteCar(deletingCarId);
-    
-      setSuccessMessage("Машина успешно удалена!"); 
+      setSuccessMessage("Машина успешно удалена!");
     } catch {
       alert("Не удалось удалить машину");
     } finally {
       setDeletingCarId(null);
     }
-  }, [deletingCarId, deleteCar, setSuccessMessage]); 
+  }, [deletingCarId, deleteCar, setSuccessMessage]);
 
   const handleCloseModal = useCallback(() => setDeletingCarId(null), []);
+
+  const filteredCars = cars.filter((car) => {
+    if (selectedBrands.length === 0) {
+      return true;
+    }
+    return selectedBrands.some((brand) => car.model.includes(brand));
+  });
+
+  const sortedAndFilteredCars = [...filteredCars];
+
+  if (currentSort !== "No sorting") {
+    sortedAndFilteredCars.sort((a, b) => {
+      const priceA = parseFloat(a.price.replace(/[^\d.]/g, ""));
+      const priceB = parseFloat(b.price.replace(/[^\d.]/g, ""));
+
+      if (currentSort === "Price: Low to High") {
+        return priceA - priceB;
+      } else if (currentSort === "Price: High to Low") {
+        return priceB - priceA;
+      }
+      return 0;
+    });
+  }
 
   const carToDelete = cars.find((c) => c.id === deletingCarId);
 
@@ -75,13 +103,23 @@ export default function TableCar() {
   );
 
   if (!cars || cars.length === 0) {
-    return <p className="p-4 text-center text-gray-500">Нет данных о машинах.</p>;
+    return (
+      <p className="p-4 text-center text-gray-500">Нет данных о машинах.</p>
+    );
+  }
+
+  if (sortedAndFilteredCars.length === 0) {
+    return (
+      <p className="p-4 text-center text-gray-500">
+        Нет данных
+      </p>
+    );
   }
 
   return (
     <>
       <Table<Car>
-        data={cars}
+        data={sortedAndFilteredCars}
         headers={["#", "Модель", "Цена", "Год", "Страна"]}
         renderRow={renderCarRow}
         renderActions={renderCarActions}
@@ -97,5 +135,3 @@ export default function TableCar() {
     </>
   );
 }
-
-
